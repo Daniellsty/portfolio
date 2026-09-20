@@ -4,8 +4,12 @@ import {
   DESK_LOOK_AT,
   HERO_CAMERA,
   HERO_LOOK_AT,
+  PHONE_CAMERA,
+  PHONE_LOOK_AT,
   START_CAMERA,
   START_LOOK_AT,
+  WINDOW_CAMERA,
+  WINDOW_LOOK_AT,
   WORK_CAMERA,
   WORK_LOOK_AT,
 } from './rig'
@@ -22,7 +26,7 @@ export type CameraKey = {
 }
 
 /**
- * Path: intro wall text above monitor → My Work → skills monitor → about → contact
+ * intro → My Work → arc around chair → monitor → ocean window → phone zoom → contact
  */
 export const CAMERA_KEYS: CameraKey[] = [
   {
@@ -35,9 +39,8 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'room',
     hud: 0,
   },
-  // First section — read intro text above monitor
   {
-    t: 0.14,
+    t: 0.1,
     camera: HERO_CAMERA,
     lookAt: HERO_LOOK_AT,
     roomOpacity: 1,
@@ -46,10 +49,9 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'room',
     hud: 0,
   },
-  // Hold on intro
   {
-    t: 0.26,
-    camera: { x: -0.55, y: 2.65, z: -0.4 },
+    t: 0.18,
+    camera: { x: -0.7, y: 2.55, z: 0.15 },
     lookAt: HERO_LOOK_AT,
     roomOpacity: 1,
     galleryOpacity: 0,
@@ -57,9 +59,8 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'room',
     hud: 0,
   },
-  // Turn to My Work wall
   {
-    t: 0.4,
+    t: 0.28,
     camera: WORK_CAMERA,
     lookAt: WORK_LOOK_AT,
     roomOpacity: 1,
@@ -68,9 +69,8 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'gallery',
     hud: 1,
   },
-  // Hold My Work
   {
-    t: 0.54,
+    t: 0.38,
     camera: { x: 0.45, y: 2.72, z: -0.15 },
     lookAt: WORK_LOOK_AT,
     roomOpacity: 1,
@@ -79,9 +79,29 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'gallery',
     hud: 1,
   },
-  // Zoom into lit monitor skills screen
+  // Arc in front of chair (not through it)
   {
-    t: 0.7,
+    t: 0.48,
+    camera: { x: 0.35, y: 1.75, z: 0.85 },
+    lookAt: { x: -0.9, y: 1.3, z: -2.5 },
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'room',
+    hud: 0,
+  },
+  {
+    t: 0.56,
+    camera: { x: -0.55, y: 1.4, z: 0.05 },
+    lookAt: DESK_LOOK_AT,
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'room',
+    hud: 0,
+  },
+  {
+    t: 0.64,
     camera: DESK_CAMERA,
     lookAt: DESK_LOOK_AT,
     roomOpacity: 1,
@@ -90,10 +110,9 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'room',
     hud: 0,
   },
-  // Hold on skills monitor
   {
-    t: 0.82,
-    camera: { x: -0.7, y: 1.25, z: -1.35 },
+    t: 0.7,
+    camera: { x: -1.2, y: 1.2, z: -1.25 },
     lookAt: DESK_LOOK_AT,
     roomOpacity: 1,
     galleryOpacity: 0,
@@ -101,10 +120,11 @@ export const CAMERA_KEYS: CameraKey[] = [
     sceneMode: 'room',
     hud: 0,
   },
+  // Approach window from the RIGHT — frame text + smaller window
   {
-    t: 0.92,
-    camera: { x: 1.4, y: 1.55, z: 4.5 },
-    lookAt: { x: 2.3, y: 1.05, z: 0.2 },
+    t: 0.76,
+    camera: { x: 0.65, y: 2.05, z: 1.55 },
+    lookAt: { x: 3.3, y: 2.4, z: 0.35 },
     roomOpacity: 1,
     galleryOpacity: 0,
     heroOpacity: 0,
@@ -112,9 +132,51 @@ export const CAMERA_KEYS: CameraKey[] = [
     hud: 2,
   },
   {
+    t: 0.84,
+    camera: WINDOW_CAMERA,
+    lookAt: WINDOW_LOOK_AT,
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'about',
+    hud: 2,
+  },
+  {
+    t: 0.9,
+    camera: { x: 1.45, y: 2.2, z: 1.7 },
+    lookAt: { x: 3.45, y: 2.4, z: 0.35 },
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'about',
+    hud: 2,
+  },
+  // Pull from window toward phone on desk
+  {
+    t: 0.94,
+    camera: { x: 0.35, y: 1.45, z: -0.6 },
+    lookAt: { x: -0.05, y: 0.9, z: -2.15 },
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'contact',
+    hud: 3,
+  },
+  // Zoom onto iPhone screen
+  {
+    t: 0.97,
+    camera: { x: 0.05, y: 1.18, z: -1.85 },
+    lookAt: PHONE_LOOK_AT,
+    roomOpacity: 1,
+    galleryOpacity: 0,
+    heroOpacity: 0,
+    sceneMode: 'contact',
+    hud: 3,
+  },
+  {
     t: 1,
-    camera: { x: 0.45, y: 1.35, z: 3.2 },
-    lookAt: { x: 0.9, y: 0.95, z: -0.2 },
+    camera: PHONE_CAMERA,
+    lookAt: PHONE_LOOK_AT,
     roomOpacity: 1,
     galleryOpacity: 0,
     heroOpacity: 0,
@@ -123,4 +185,4 @@ export const CAMERA_KEYS: CameraKey[] = [
   },
 ]
 
-export const SCROLL_PAGES = 10
+export const SCROLL_PAGES = 14

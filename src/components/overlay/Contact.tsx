@@ -1,4 +1,4 @@
-import { COPY } from '../../data/portfolio'
+import { COPY } from "../../data/portfolio";
 
 export function Contact() {
   return (
@@ -8,5 +8,5 @@ export function Contact() {
     >
       <p className="text-sm text-white/80 md:text-base">{COPY.phoneHint}</p>
     </section>
-  )
+  );
 }

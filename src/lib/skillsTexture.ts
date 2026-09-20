@@ -19,17 +19,27 @@ export const SKILLS = [
 export const NATURE_WALLPAPER_URL = '/textures/nature-wallpaper.jpg'
 
 const DOCK_APPS = [
-  { name: 'Messages', short: 'Msg', color: '#34c759', open: true },
-  { name: 'WhatsApp', short: 'WA', color: '#25d366', open: true },
-  { name: 'Calendar', short: 'Cal', color: '#ff3b30', open: true },
-  { name: 'Spotify', short: 'Spot', color: '#1db954', open: true },
-  { name: 'VS Code', short: 'Code', color: '#0078d4', open: true },
-  { name: 'Finder', short: 'Find', color: '#5ac8fa', open: true },
-  { name: 'Safari', short: 'Saf', color: '#0a84ff', open: false },
+  { id: 'messages', name: 'Messages', open: true },
+  { id: 'whatsapp', name: 'WhatsApp', open: true },
+  { id: 'vscode', name: 'VS Code', open: true },
+  { id: 'powerpoint', name: 'PowerPoint', open: true },
+  { id: 'calendar', name: 'Calendar', open: true },
+  { id: 'spotify', name: 'Spotify', open: true },
 ] as const
 
 let skillsTexture: CanvasTexture | null = null
 let builtWithPhoto = false
+
+export function invalidateSkillsTexture() {
+  if (skillsTexture) {
+    skillsTexture.dispose()
+    skillsTexture = null
+  }
+  builtWithPhoto = false
+}
+
+// ensure HMR picks up new dock icons
+invalidateSkillsTexture()
 
 /** Ultrawide macOS desktop — real nature wallpaper + Skills Finder */
 export function getSkillsTexture(wallpaper?: CanvasImageSource | null) {
@@ -259,52 +269,183 @@ function drawFolderIcon(ctx: CanvasRenderingContext2D, x: number, y: number, lab
 }
 
 function drawDock(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  const iconSize = 50
-  const gap = 14
+  const iconSize = 56
+  const gap = 16
   const count = DOCK_APPS.length
-  const dockW = count * (iconSize + gap) + 36
-  const dockH = 78
+  const dockW = count * (iconSize + gap) + 40
+  const dockH = 88
   const dx = (w - dockW) / 2
   const dy = h - dockH - 10
 
-  // Taskbar / dock glass
-  ctx.fillStyle = 'rgba(30,30,32,0.55)'
-  roundRect(ctx, dx, dy, dockW, dockH, 18)
+  ctx.fillStyle = 'rgba(30,30,32,0.58)'
+  roundRect(ctx, dx, dy, dockW, dockH, 20)
   ctx.fill()
-  ctx.strokeStyle = 'rgba(255,255,255,0.28)'
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)'
   ctx.lineWidth = 1
-  roundRect(ctx, dx, dy, dockW, dockH, 18)
+  roundRect(ctx, dx, dy, dockW, dockH, 20)
   ctx.stroke()
 
-  // label
-  ctx.fillStyle = 'rgba(255,255,255,0.7)'
-  ctx.font = '500 11px -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.75)'
+  ctx.font = '500 12px -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif'
   ctx.textAlign = 'center'
   ctx.fillText('Open Apps', w / 2, dy - 8)
-  ctx.textAlign = 'left'
 
   DOCK_APPS.forEach((app, i) => {
-    const ix = dx + 20 + i * (iconSize + gap)
-    const iy = dy + 10
+    const ix = dx + 22 + i * (iconSize + gap)
+    const iy = dy + 12
+    drawAppIcon(ctx, app.id, ix, iy, iconSize)
 
-    ctx.fillStyle = app.color
-    roundRect(ctx, ix, iy, iconSize, iconSize, 12)
-    ctx.fill()
-
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '700 12px -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(app.short, ix + iconSize / 2, iy + iconSize / 2 + 4)
-
-    // open indicator
     if (app.open) {
       ctx.beginPath()
       ctx.fillStyle = '#ffffff'
-      ctx.arc(ix + iconSize / 2, dy + dockH - 8, 2.6, 0, Math.PI * 2)
+      ctx.arc(ix + iconSize / 2, dy + dockH - 9, 2.8, 0, Math.PI * 2)
       ctx.fill()
     }
-    ctx.textAlign = 'left'
   })
+  ctx.textAlign = 'left'
+}
+
+function drawAppIcon(
+  ctx: CanvasRenderingContext2D,
+  id: (typeof DOCK_APPS)[number]['id'],
+  x: number,
+  y: number,
+  size: number,
+) {
+  const r = 13
+  const cx = x + size / 2
+  const cy = y + size / 2
+
+  if (id === 'messages') {
+    roundRect(ctx, x, y, size, size, r)
+    ctx.fillStyle = '#34c759'
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    roundRect(ctx, cx - 16, cy - 10, 28, 18, 8)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.moveTo(cx - 6, cy + 8)
+    ctx.lineTo(cx - 2, cy + 8)
+    ctx.lineTo(cx - 8, cy + 15)
+    ctx.closePath()
+    ctx.fill()
+    return
+  }
+
+  if (id === 'whatsapp') {
+    ctx.beginPath()
+    ctx.arc(cx, cy, size / 2 - 1, 0, Math.PI * 2)
+    ctx.fillStyle = '#25d366'
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(cx, cy - 1, size * 0.28, 0, Math.PI * 2)
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 3.5
+    ctx.stroke()
+    // handset
+    ctx.beginPath()
+    ctx.arc(cx + 2, cy + 2, size * 0.16, 0.2, Math.PI * 1.1)
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 3.2
+    ctx.lineCap = 'round'
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(cx - 8, cy + 10)
+    ctx.quadraticCurveTo(cx - 14, cy + 16, cx - 4, cy + 18)
+    ctx.strokeStyle = '#25d366'
+    ctx.lineWidth = 6
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(cx - 8, cy + 10)
+    ctx.quadraticCurveTo(cx - 14, cy + 16, cx - 4, cy + 18)
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 3
+    ctx.stroke()
+    return
+  }
+
+  if (id === 'vscode') {
+    roundRect(ctx, x, y, size, size, r)
+    ctx.fillStyle = '#0078d4'
+    ctx.fill()
+    // ribbon / chevron mark
+    ctx.beginPath()
+    ctx.moveTo(cx - 14, cy - 14)
+    ctx.lineTo(cx + 4, cy)
+    ctx.lineTo(cx - 14, cy + 14)
+    ctx.lineTo(cx - 8, cy + 14)
+    ctx.lineTo(cx + 10, cy)
+    ctx.lineTo(cx - 8, cy - 14)
+    ctx.closePath()
+    ctx.fillStyle = '#ffffff'
+    ctx.fill()
+    ctx.beginPath()
+    ctx.moveTo(cx + 8, cy - 16)
+    ctx.lineTo(cx + 16, cy - 10)
+    ctx.lineTo(cx + 16, cy + 10)
+    ctx.lineTo(cx + 8, cy + 16)
+    ctx.lineTo(cx + 8, cy + 8)
+    ctx.lineTo(cx + 12, cy + 6)
+    ctx.lineTo(cx + 12, cy - 6)
+    ctx.lineTo(cx + 8, cy - 8)
+    ctx.closePath()
+    ctx.fill()
+    return
+  }
+
+  if (id === 'powerpoint') {
+    roundRect(ctx, x, y, size, size, r)
+    ctx.fillStyle = '#c43e1c'
+    ctx.fill()
+    // lighter panel
+    ctx.fillStyle = '#d24726'
+    roundRect(ctx, cx - 2, y + 8, size / 2 - 4, size - 16, 4)
+    ctx.fill()
+    // orange P tile
+    roundRect(ctx, x + 6, cy - 12, 24, 24, 4)
+    ctx.fillStyle = '#b7472a'
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '800 18px -apple-system, BlinkMacSystemFont, Arial, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('P', x + 18, cy + 6)
+    return
+  }
+
+  if (id === 'calendar') {
+    roundRect(ctx, x, y, size, size, r)
+    ctx.fillStyle = '#ffffff'
+    ctx.fill()
+    ctx.fillStyle = '#ff3b30'
+    roundRect(ctx, x, y, size, 16, r)
+    ctx.fill()
+    ctx.fillStyle = '#ff3b30'
+    ctx.fillRect(x, y + 10, size, 8)
+    ctx.fillStyle = '#1d1d1f'
+    ctx.font = '800 22px -apple-system, BlinkMacSystemFont, Arial, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(String(new Date().getDate()), cx, cy + 14)
+    return
+  }
+
+  if (id === 'spotify') {
+    ctx.beginPath()
+    ctx.arc(cx, cy, size / 2 - 1, 0, Math.PI * 2)
+    ctx.fillStyle = '#1db954'
+    ctx.fill()
+    ctx.strokeStyle = '#191414'
+    ctx.lineWidth = 3.5
+    ctx.lineCap = 'round'
+    ;[
+      [cy - 6, 14, 0.35],
+      [cy + 1, 11, 0.4],
+      [cy + 8, 8, 0.45],
+    ].forEach(([yy, rw, start]) => {
+      ctx.beginPath()
+      ctx.arc(cx, yy as number, rw as number, Math.PI * (start as number), Math.PI * (1 - (start as number)))
+      ctx.stroke()
+    })
+  }
 }
 
 function roundRect(

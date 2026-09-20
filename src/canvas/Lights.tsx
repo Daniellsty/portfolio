@@ -1,10 +1,10 @@
 export function Lights() {
   return (
     <>
-      <ambientLight intensity={0.95} color="#f3efe8" />
-      <directionalLight intensity={1.45} position={[5, 8, 3]} color="#fff8ef" />
-      <directionalLight intensity={0.35} position={[-4, 4, 1]} color="#e8e4f5" />
-      <pointLight intensity={0.4} position={[0.2, 2.2, 0.5]} color="#ffffff" distance={8} />
+      <ambientLight intensity={0.55} color="#e4eaf2" />
+      <directionalLight intensity={0.4} position={[-3, 5.5, 2]} color="#d8e2ee" />
+      <pointLight intensity={0.35} position={[-1, 2.4, -0.8]} color="#f2f6fb" distance={9} />
+      <pointLight intensity={0.28} position={[0.4, 2.0, 0.8]} color="#fff5eb" distance={7} />
     </>
   )
 }

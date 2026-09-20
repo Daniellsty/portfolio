@@ -108,11 +108,11 @@ export function MonitorScreen() {
     return getSkillsTexture(image)
   }, [wallpaper])
 
-  // Ultrawide modern panel ~21:9
+  // Ultrawide modern panel — slightly smaller
   return (
     <mesh>
-      <planeGeometry args={[1.62, 0.72]} />
-      <meshBasicMaterial map={map} toneMapped={false} />
+      <planeGeometry args={[1.3, 0.56]} />
+      <meshBasicMaterial key={map.uuid} map={map} toneMapped={false} />
     </mesh>
   )
 }
