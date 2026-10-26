@@ -124,31 +124,126 @@ function buildSeaPlate() {
   return tex
 }
 
+/** Soft-edged sun shaft through window */
 function getRayTexture() {
-  const size = 256
+  const w = 256
+  const h = 512
   const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
+  canvas.width = w
+  canvas.height = h
   const ctx = canvas.getContext('2d')!
-  const g = ctx.createLinearGradient(0, 0, size, 0)
-  g.addColorStop(0, 'rgba(255,230,180,0)')
-  g.addColorStop(0.35, 'rgba(255,220,160,0.55)')
-  g.addColorStop(0.55, 'rgba(255,235,190,0.7)')
-  g.addColorStop(0.75, 'rgba(255,220,160,0.4)')
-  g.addColorStop(1, 'rgba(255,230,180,0)')
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, size, size)
-  const fade = ctx.createLinearGradient(0, 0, 0, size)
-  fade.addColorStop(0, 'rgba(255,255,255,0.15)')
-  fade.addColorStop(0.4, 'rgba(255,255,255,1)')
-  fade.addColorStop(1, 'rgba(255,255,255,0)')
+
+  const across = ctx.createLinearGradient(0, 0, w, 0)
+  across.addColorStop(0, 'rgba(255,240,210,0)')
+  across.addColorStop(0.28, 'rgba(255,236,200,0.2)')
+  across.addColorStop(0.42, 'rgba(255,245,220,0.75)')
+  across.addColorStop(0.5, 'rgba(255,250,235,0.95)')
+  across.addColorStop(0.58, 'rgba(255,245,220,0.75)')
+  across.addColorStop(0.72, 'rgba(255,236,200,0.2)')
+  across.addColorStop(1, 'rgba(255,240,210,0)')
+  ctx.fillStyle = across
+  ctx.fillRect(0, 0, w, h)
+
+  const along = ctx.createLinearGradient(0, 0, 0, h)
+  along.addColorStop(0, 'rgba(255,255,255,0)')
+  along.addColorStop(0.08, 'rgba(255,255,255,0.9)')
+  along.addColorStop(0.5, 'rgba(255,255,255,0.7)')
+  along.addColorStop(1, 'rgba(255,255,255,0)')
   ctx.globalCompositeOperation = 'destination-in'
-  ctx.fillStyle = fade
-  ctx.fillRect(0, 0, size, size)
+  ctx.fillStyle = along
+  ctx.fillRect(0, 0, w, h)
+
   const tex = new CanvasTexture(canvas)
+  tex.colorSpace = SRGBColorSpace
   tex.needsUpdate = true
   return tex
 }
+
+/**
+ * Hard-edged trapezoid sunlight — like a rectangular window
+ * projected onto a wall (the triangular / trapezoid look in the reference).
+ */
+function getWindowSunTexture() {
+  const w = 1024
+  const h = 1024
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')!
+
+  // Trapezoid: wider on the right/bottom — sun from a side window
+  const trap = (inset: number) => {
+    ctx.beginPath()
+    ctx.moveTo(w * 0.18 + inset * 1.2, h * 0.12 + inset)
+    ctx.lineTo(w * 0.9 - inset, h * 0.06 + inset * 0.6)
+    ctx.lineTo(w * 0.96 - inset * 0.4, h * 0.9 - inset)
+    ctx.lineTo(w * 0.08 + inset, h * 0.82 - inset * 0.5)
+    ctx.closePath()
+  }
+
+  // Soft outer glow (penumbra)
+  ctx.filter = 'blur(28px)'
+  trap(0)
+  ctx.fillStyle = 'rgba(255,236,200,0.45)'
+  ctx.fill()
+
+  // Mid soft edge
+  ctx.filter = 'blur(10px)'
+  trap(18)
+  ctx.fillStyle = 'rgba(255,244,220,0.85)'
+  ctx.fill()
+
+  // Hard bright core — window cutout look
+  ctx.filter = 'none'
+  trap(36)
+  const core = ctx.createLinearGradient(w * 0.2, h * 0.1, w * 0.85, h * 0.85)
+  core.addColorStop(0, 'rgba(255,250,235,1)')
+  core.addColorStop(0.45, 'rgba(255,244,215,1)')
+  core.addColorStop(1, 'rgba(255,232,190,0.95)')
+  ctx.fillStyle = core
+  ctx.fill()
+
+  const tex = new CanvasTexture(canvas)
+  tex.colorSpace = SRGBColorSpace
+  tex.needsUpdate = true
+  return tex
+}
+
+/** Floor / desk spill — softer parallelogram */
+function getFloorSunTexture() {
+  const w = 768
+  const h = 768
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')!
+
+  ctx.filter = 'blur(22px)'
+  ctx.beginPath()
+  ctx.moveTo(w * 0.12, h * 0.2)
+  ctx.lineTo(w * 0.88, h * 0.1)
+  ctx.lineTo(w * 0.92, h * 0.85)
+  ctx.lineTo(w * 0.08, h * 0.78)
+  ctx.closePath()
+  ctx.fillStyle = 'rgba(255,236,200,0.9)'
+  ctx.fill()
+
+  ctx.filter = 'blur(6px)'
+  ctx.beginPath()
+  ctx.moveTo(w * 0.2, h * 0.28)
+  ctx.lineTo(w * 0.8, h * 0.2)
+  ctx.lineTo(w * 0.84, h * 0.75)
+  ctx.lineTo(w * 0.16, h * 0.7)
+  ctx.closePath()
+  ctx.fillStyle = 'rgba(255,248,230,1)'
+  ctx.fill()
+
+  const tex = new CanvasTexture(canvas)
+  tex.colorSpace = SRGBColorSpace
+  tex.needsUpdate = true
+  return tex
+}
+
 
 /** Brown sailboat — mast, boom, sails, ropes; fades in/out at distance */
 function DistantShip({ start, speed, y, scale }: { start: number; speed: number; y: number; scale: number }) {
@@ -404,6 +499,8 @@ function WindowAboutText() {
 /** Stylized moving sea + distant brown ships + black bird flocks + about copy */
 export function OceanWindow() {
   const rayMap = useMemo(() => getRayTexture(), [])
+  const wallSunMap = useMemo(() => getWindowSunTexture(), [])
+  const floorSunMap = useMemo(() => getFloorSunTexture(), [])
   const halfW = WIN_W / 2
   const halfH = WIN_H / 2
   const trim = 0.08
@@ -465,27 +562,58 @@ export function OceanWindow() {
         </mesh>
       </group>
 
-      <SoftRay map={rayMap} position={[2.4, 1.5, 0.4]} rotation={[0.12, 0.05, -0.62]} scale={[3.0, 1.6, 1]} opacity={0.36} />
-      <SoftRay map={rayMap} position={[1.7, 1.15, 0.05]} rotation={[0.18, 0.08, -0.55]} scale={[2.6, 1.35, 1]} opacity={0.26} />
-      <SoftRay map={rayMap} position={[1.0, 0.92, -0.7]} rotation={[0.22, 0.1, -0.48]} scale={[2.2, 1.1, 1]} opacity={0.18} />
-      <SoftRay map={rayMap} position={[0.35, 0.84, -1.55]} rotation={[0.26, 0.06, -0.4]} scale={[1.85, 0.95, 1]} opacity={0.12} />
+      {/* Subtle volumetric shafts from the window (secondary) */}
+      <SoftRay map={rayMap} position={[2.4, 1.9, 0.15]} rotation={[0.06, 0.38, -0.98]} scale={[1.1, 3.8, 1]} opacity={0.32} />
+      <SoftRay map={rayMap} position={[1.6, 1.5, -0.7]} rotation={[0.08, 0.32, -0.92]} scale={[0.9, 3.2, 1]} opacity={0.2} />
 
-      <mesh position={[-0.2, 0.786, -2.35]} rotation={[-Math.PI / 2, 0, 0.3]}>
-        <planeGeometry args={[1.7, 1.0]} />
-        <meshBasicMaterial color="#ffd9a0" transparent opacity={0.26} depthWrite={false} />
+      {/* Main wall splash — hard trapezoid like sunlight through a window */}
+      <mesh position={[0.95, 1.92, -3.115]} rotation={[0, 0, -0.16]}>
+        <planeGeometry args={[3.1, 2.7]} />
+        <meshBasicMaterial map={wallSunMap} transparent opacity={0.78} depthWrite={false} toneMapped={false} />
       </mesh>
-      <mesh position={[0.55, 0.02, -1.6]} rotation={[-Math.PI / 2, 0, 0.25]}>
-        <planeGeometry args={[2.2, 1.5]} />
-        <meshBasicMaterial color="#ffe2b0" transparent opacity={0.12} depthWrite={false} />
+      <mesh position={[1.15, 1.88, -3.11]} rotation={[0, 0, -0.18]}>
+        <planeGeometry args={[2.5, 2.2]} />
+        <meshBasicMaterial map={wallSunMap} transparent opacity={0.32} depthWrite={false} toneMapped={false} />
       </mesh>
 
-      <directionalLight position={[8, 4.2, 2.0]} intensity={1.45} color="#ffe8cc" />
-      <spotLight position={[3.25, 2.55, 0.5]} angle={0.82} penumbra={1} intensity={3.4} color="#ffe0b8" distance={14} decay={1.2} />
-      <spotLight position={[2.3, 2.1, -0.5]} angle={0.7} penumbra={1} intensity={2.2} color="#ffe6c4" distance={10} decay={1.3} />
-      <pointLight position={[2.0, 1.3, -1.3]} intensity={1.2} color="#ffe8cc" distance={7} decay={1.75} />
-      <pointLight position={[0.15, 1.0, -2.25]} intensity={0.95} color="#fff2e0" distance={5} decay={1.9} />
-      {/* Soft desk fill for phone */}
-      <pointLight position={[-0.05, 1.05, -2.15]} intensity={0.7} color="#fff8f0" distance={2.5} decay={2} />
+      {/* Desk top — sun cut across the white desk */}
+      <mesh position={[0.15, 0.79, -2.38]} rotation={[-Math.PI / 2, 0, 0.42]}>
+        <planeGeometry args={[1.9, 1.05]} />
+        <meshBasicMaterial map={floorSunMap} transparent opacity={0.5} depthWrite={false} toneMapped={false} />
+      </mesh>
+      {/* Sofa face catch */}
+      <mesh position={[1.45, 0.58, -2.2]} rotation={[-0.5, 0.45, 0.12]}>
+        <planeGeometry args={[1.45, 0.95]} />
+        <meshBasicMaterial map={floorSunMap} transparent opacity={0.38} depthWrite={false} toneMapped={false} />
+      </mesh>
+      {/* Floor under desk / toward sofa */}
+      <mesh position={[0.75, 0.016, -1.75]} rotation={[-Math.PI / 2, 0, 0.32]}>
+        <planeGeometry args={[2.3, 1.6]} />
+        <meshBasicMaterial map={floorSunMap} transparent opacity={0.34} depthWrite={false} toneMapped={false} />
+      </mesh>
+
+      {/* Sun from outside the right window */}
+      <directionalLight position={[9.5, 5.5, 0.6]} intensity={1.75} color="#fff0d4" />
+      <spotLight
+        position={[3.45, 3.0, 0.35]}
+        angle={0.4}
+        penumbra={0.4}
+        intensity={4.6}
+        color="#ffe9c0"
+        distance={12}
+        decay={1.05}
+      />
+      <spotLight
+        position={[3.2, 2.6, -0.5]}
+        angle={0.38}
+        penumbra={0.5}
+        intensity={2.8}
+        color="#ffe0a8"
+        distance={10}
+        decay={1.15}
+      />
+      <pointLight position={[1.5, 1.3, -1.8]} intensity={0.75} color="#fff0d8" distance={5.5} decay={1.85} />
+      <pointLight position={[-0.05, 1.05, -2.15]} intensity={0.5} color="#fff8f0" distance={2.5} decay={2} />
 
       <DistantShip start={0} speed={0.055} y={1.4} scale={0.95} />
       <DistantShip start={22} speed={0.045} y={1.36} scale={0.7} />

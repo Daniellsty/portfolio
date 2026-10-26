@@ -154,19 +154,19 @@ export const CAMERA_KEYS: CameraKey[] = [
   // Pull from window toward phone on desk
   {
     t: 0.94,
-    camera: { x: 0.35, y: 1.45, z: -0.6 },
-    lookAt: { x: -0.05, y: 0.9, z: -2.15 },
+    camera: { x: 0.2, y: 1.35, z: -0.85 },
+    lookAt: { x: -0.08, y: 0.88, z: -2.2 },
     roomOpacity: 1,
     galleryOpacity: 0,
     heroOpacity: 0,
     sceneMode: 'contact',
     hud: 3,
   },
-  // Zoom onto iPhone screen
+  // Drop in from above onto iPhone
   {
     t: 0.97,
-    camera: { x: 0.05, y: 1.18, z: -1.85 },
-    lookAt: PHONE_LOOK_AT,
+    camera: { x: -0.12, y: 1.35, z: -2.05 },
+    lookAt: { x: -0.08, y: 0.82, z: -2.3 },
     roomOpacity: 1,
     galleryOpacity: 0,
     heroOpacity: 0,

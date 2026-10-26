@@ -16,14 +16,14 @@ export type Project = {
 }
 
 export const profile = {
-  name: 'Muhammad Bilal Khan',
-  email: 'hello@mbilalkhan.com',
-  linkedin: 'https://www.linkedin.com/in/mbilalkhan',
-  twitter: 'https://twitter.com/mbilalkhan',
+  name: 'Danyal Lorestani',
+  email: 'danyallsty04@gmail.com',
+  linkedin: 'https://www.linkedin.com/in/danyallorestany',
+  twitter: null as string | null,
 }
 
 export const COPY = {
-  heroLine1: 'My Name Is Muhammad Bilal Khan',
+  heroLine1: 'My Name Is Danyal Lorestani',
   heroLine2Before: 'I am an',
   heroLine2Accent: 'Artistic',
   heroLine2After: 'Web Developer.',

@@ -32,9 +32,9 @@ export const DESK_LOOK_AT: Vec3 = { x: -1.1, y: 1.16, z: -2.78 }
 export const WINDOW_CAMERA: Vec3 = { x: 1.15, y: 2.15, z: 1.95 }
 export const WINDOW_LOOK_AT: Vec3 = { x: 3.4, y: 2.45, z: 0.35 }
 
-/** Desk iPhone — zoom so home screen / icons read clearly */
-export const PHONE_CAMERA: Vec3 = { x: -0.02, y: 1.12, z: -1.95 }
-export const PHONE_LOOK_AT: Vec3 = { x: -0.08, y: 0.82, z: -2.28 }
+/** Desk iPhone — top-down onto screen */
+export const PHONE_CAMERA: Vec3 = { x: -0.16, y: 1.22, z: -2.18 }
+export const PHONE_LOOK_AT: Vec3 = { x: -0.08, y: 0.795, z: -2.32 }
 
 export const rig: RigState = {
   progress: 0,
